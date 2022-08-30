@@ -5,10 +5,7 @@ else:
     from ConfigParser import SafeConfigParser
 
 def read_config_file(configFile):
-    if is_python_3():
-        config = ConfigParser()
-    else:
-        config = SafeConfigParser()
+    config = ConfigParser() if is_python_3() else SafeConfigParser()
     config.read(configFile)
     return config
 

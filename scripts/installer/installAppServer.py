@@ -13,13 +13,13 @@ def runAsadminScript(config):
    os.environ['GLASSFISH_ROOT'] = config.get('glassfish','GLASSFISH_DIRECTORY')
    os.environ['MEM_HEAP_SIZE'] = config.get('glassfish','GLASSFISH_HEAP')
    os.environ['GLASSFISH_REQUEST_TIMEOUT'] = config.get('glassfish','GLASSFISH_REQUEST_TIMEOUT')
-	
+
    os.environ['DB_PORT'] = config.get('database','POSTGRES_PORT')
    os.environ['DB_HOST'] = config.get('database','POSTGRES_SERVER')
    os.environ['DB_NAME'] = config.get('database','POSTGRES_DATABASE')
    os.environ['DB_USER'] = config.get('database','POSTGRES_USER')
    os.environ['DB_PASS'] = config.get('database','POSTGRES_PASSWORD')
-   
+
    os.environ['RSERVE_HOST'] = config.get('rserve','RSERVE_HOST')
    os.environ['RSERVE_PORT'] = config.get('rserve','RSERVE_PORT')
    os.environ['RSERVE_USER'] = config.get('rserve','RSERVE_USER')
@@ -46,9 +46,6 @@ def runAsadminScript(config):
 
    print("running app. server configuration script (as-setup.sh)")
    returncode = subprocess.call(["./as-setup.sh"])
-   if returncode != 0:
-      return False
-
-   return True
+   return returncode == 0
 
 

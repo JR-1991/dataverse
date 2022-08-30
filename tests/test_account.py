@@ -61,7 +61,7 @@ class test_account(unittest.TestCase):
 
     def tearDown(self):
         if not (config.local):
-            print("Link to your job: https://saucelabs.com/jobs/%s" % self.wd.session_id)        
+            print(f"Link to your job: https://saucelabs.com/jobs/{self.wd.session_id}")
         self.wd.quit()
 
 if __name__ == '__main__':

@@ -30,7 +30,7 @@ class test_dataverse(unittest.TestCase):
         wd.get(config.accessURL)
         wd.find_element_by_link_text("Log In").click()
         time.sleep(1)
-        if not ("Login" in wd.find_element_by_tag_name("html").text):
+        if "Login" not in wd.find_element_by_tag_name("html").text:
             success = False
             print("verifyTextPresent failed")
         wd.find_element_by_id("loginForm:userName").click()
@@ -64,7 +64,7 @@ class test_dataverse(unittest.TestCase):
     
     def tearDown(self):
         if not (config.local):
-            print("Link to your job: https://saucelabs.com/jobs/%s" % self.wd.session_id)        
+            print(f"Link to your job: https://saucelabs.com/jobs/{self.wd.session_id}")
         self.wd.quit()
 
 if __name__ == '__main__':

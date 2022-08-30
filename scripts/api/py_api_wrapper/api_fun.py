@@ -30,15 +30,15 @@ def load_users_from_api_file(fname):
     :param fname: full path to a file with user info in JSON format
     """
     if not os.path.isfile(fname):
-        msgx('File not found: %s' % fname)
-        
+        msgx(f'File not found: {fname}')
+
     # Load the JSON file
     user_dict = json.loads(open(fname,'r').read())
 
     # Get a the DataverseAPILink object
     dv_lnk_obj = get_dataverse_link_object('pete')
     dv_lnk_obj.set_return_mode_python()
-    
+
     # Iterate through json
     for user_info in user_dict.get('data', []):
         # check if user exists via api
@@ -47,16 +47,16 @@ def load_users_from_api_file(fname):
             continue    # The user exist, loop to the next user
 
         user_info.pop('id')     # Use the param, except for the 'id'
-        
+
         # Create the user, passing user params and a password
         #
-        
+
         new_password = user_info.get('userName')
         dv_lnk_obj.create_user(user_info, new_password)
         
 def add_and_publish_dataverses(fname, apikey):
     if not os.path.isfile(fname):
-        msgx('File not found: %s' % fname)
+        msgx(f'File not found: {fname}')
 
     # Load the JSON file
     dv_dict = json.loads(open(fname,'r').read())
@@ -70,20 +70,20 @@ def add_and_publish_dataverses(fname, apikey):
     for dv_info in dv_dict.get('data', []):
         # check if user exists via api
         current_dv_info = dv_lnk_obj.get_dataverse_by_id_or_alias(dv_info.get('id', None))
-        
+
         # DV exists, continue loop
         if current_dv_info and current_dv_info.get('status') == 'OK': 
             msg('>>> FOUND IT')
             previous_alias = current_dv_info['data']['alias']
             continue    # The user exist, loop to the next user
-            
+
         # No DV, create it
         keys_not_needed = ['id', 'ownerID', 'creationDate', 'creator']
         for key in keys_not_needed:
             if dv_info.has_key(key):
                 dv_info.pop(key)
-        
-        msg('params to send: %s' % dv_info)
+
+        msg(f'params to send: {dv_info}')
         # If created,  publish it
         json_resp = dv_lnk_obj.create_dataverse(previous_alias, dv_info)
         if json_resp.get('status') == 'OK': 
@@ -96,26 +96,12 @@ def add_and_publish_dataverses(fname, apikey):
             
 def add_dataverses(name, cnt=1, parent_dv_name_or_id=1, apikey='snoopy'):
     # get the DataverseAPILink
-     dat = get_dataverse_link_object(apikey=apikey)
-     dat.set_return_mode_python()
-     
-     for x in range(249, 260):      
-         dat.publish_dataverse(x)
-     return
-     for x in range(0, cnt):        
-        num  = x+1
-        alias_str = "new_dv_%d" % num
-        dv_params_str = """{ "alias":"%s",
-                    "name":"%s %s",
-                    "affiliation":"Affiliation value",
-                    "contactEmail":"pete@malinator.com",
-                    "permissionRoot":true,
-                    "description":"More API testing"
-                    }""" % (alias_str, name, num)
-    
-        dv_params = json.loads(dv_params_str)
-        dat.create_dataverse(parent_dv_name_or_id, dv_params, )
-        if x % 20 == 0: time.sleep(1)
+    dat = get_dataverse_link_object(apikey=apikey)
+    dat.set_return_mode_python()
+
+    for x in range(249, 260):      
+        dat.publish_dataverse(x)
+    return
 
 
 def delete_dataverses_id_greather_than(id_num, apikey):

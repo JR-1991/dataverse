@@ -12,6 +12,6 @@ def ConfigSectionMap(section):
             if dict1[option] == -1:
                 sys.stderr.write("skip: %s\n" % option)
         except:
-            print("exception on %s!" % option)
+            print(f"exception on {option}!")
             dict1[option] = None
     return dict1

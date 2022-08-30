@@ -140,10 +140,10 @@ class DataverseAPILink:
             self.server_name = server_name_pieces[1]
         
     def get_server_name(self):
-        
+
         if self.use_https:
-            return 'https://' + self.server_name
-        return 'http://' + self.server_name
+            return f'https://{self.server_name}'
+        return f'http://{self.server_name}'
         
     def make_api_call(self, url_str, method, params={}, headers=None):
         """
@@ -157,15 +157,15 @@ class DataverseAPILink:
         :returns: response from the request
         :rtype: depends on self.RETURN_MODE_PYTHON; either text or JSON converted to python dict
         """
-        
+
         msg('url_str: [%s]\nmethod:[%s]\nparams:[%s]\nheaders:[%s]' % (url_str, method, params, headers))
         if url_str is None:
             return None
-        if not method in self.HTTP_METHODS:
-            msgt('Error: Method not found: %s' % method)
-        if not type(params) == dict:
+        if method not in self.HTTP_METHODS:
+            msgt(f'Error: Method not found: {method}')
+        if type(params) != dict:
             msgt('Params must be a python dict, {}')
-            
+
         params = json.dumps(params)
 
         if method == self.HTTP_GET:
@@ -177,14 +177,14 @@ class DataverseAPILink:
                 r = requests.post(url_str, data=params)
         elif method == self.HTTP_DELETE:
             r = requests.delete(url_str, data=params)
-            
-        msg('Status Code: %s' % r.status_code)
-        msg('Encoding: %s' % r.encoding)
-        msg('Text: %s' % r.text)
-        
+
+        msg(f'Status Code: {r.status_code}')
+        msg(f'Encoding: {r.encoding}')
+        msg(f'Text: {r.text}')
+
         if self.return_mode == self.RETURN_MODE_PYTHON:
             return r.json()
-        
+
         #print json.dumps(json.loads(s), indent=4)
         try:
             return json.dumps(json.loads(r.text), indent=4)
@@ -201,13 +201,16 @@ class DataverseAPILink:
         :param new_password: str for the user's password
         """
         msgt('create_user')
-        if not type(dv_params) is dict:
+        if type(dv_params) is not dict:
             msgx('dv_params is None')
 
         #    [ 'create_user', 'Create User', '/api/builtin-users?password=%s' % SingleAPISpec.URL_PLACEHOLDER, False, 1, True]\
-        
-        url_str = self.get_server_name() + '/api/builtin-users?password=%s' % (new_password)
-        headers = {'content-type': 'application/json'}    
+
+        url_str = (
+            self.get_server_name() + f'/api/builtin-users?password={new_password}'
+        )
+
+        headers = {'content-type': 'application/json'}
         return self.make_api_call(url_str, self.HTTP_POST, params=dv_params, headers=headers)
     
     
@@ -235,11 +238,15 @@ class DataverseAPILink:
         print dat.create_dataverse(parent_dv_alias_or_id, dv_params)
         """
         msgt('create_dataverse')
-        if not type(dv_params) is dict:
+        if type(dv_params) is not dict:
             msgx('dv_params is None')
-            
-        url_str = self.get_server_name() + '/api/dataverses/%s?key=%s' % (parent_dv_alias_or_id, self.apikey)
-        headers = {'content-type': 'application/json'}    
+
+        url_str = (
+            self.get_server_name()
+            + f'/api/dataverses/{parent_dv_alias_or_id}?key={self.apikey}'
+        )
+
+        headers = {'content-type': 'application/json'}
         return self.make_api_call(url_str, self.HTTP_POST, params=dv_params, headers=headers)
         
     def publish_dataverse(self, dv_id_or_name):
@@ -250,12 +257,16 @@ class DataverseAPILink:
         :param dv_id_or_name: Dataverse id (str or int) or alias (str)
         """
         msgt('publish_dataverse')
-        print 'dv_id_or_name', dv_id_or_name
+        msgt('publish_dataverse')
         if dv_id_or_name is None:
             msgx('dv_id_or_name is None')
-        
-        url_str = self.get_server_name() + '/api/dataverses/%s/actions/:publish?key=%s' % (dv_id_or_name, self.apikey)
-        headers = {'content-type': 'application/json'}    
+
+        url_str = (
+            self.get_server_name()
+            + f'/api/dataverses/{dv_id_or_name}/actions/:publish?key={self.apikey}'
+        )
+
+        headers = {'content-type': 'application/json'}
         return self.make_api_call(url_str, self.HTTP_POST)
         
         
@@ -301,16 +312,16 @@ class DataverseAPILink:
 
     def make_api_write_call(self, call_name, url_path, use_api_key=False, id_val=None, params_dict={}):
         msgt(call_name)
-        print 'params_dict', params_dict
-        if not type(params_dict) is dict:
-            msgx('params_dict is not a dict.  Found: %s' % type(params_dict))
+        msgt(call_name)
+        if type(params_dict) is not dict:
+            msgx(f'params_dict is not a dict.  Found: {type(params_dict)}')
 
         if use_api_key:
-            url_str = '%s%s?key=%s' % (self.get_server_name(), url_path, self.apikey)
+            url_str = f'{self.get_server_name()}{url_path}?key={self.apikey}'
         else:
-            url_str = '%s%s' % (self.get_server_name(), url_path)
+            url_str = f'{self.get_server_name()}{url_path}'
 
-        headers = {'content-type': 'application/json'}    
+        headers = {'content-type': 'application/json'}
         return self.make_api_call(url_str, self.HTTP_POST, params=params_dict, headers=headers)
 
     
@@ -318,31 +329,30 @@ class DataverseAPILink:
     def make_api_get_call(self, call_name, url_path, use_api_key=False, id_val=None):
         msgt(call_name)
         if use_api_key:
-            url_str = '%s%s?key=%s' % (self.get_server_name(), url_path, self.apikey)
+            url_str = f'{self.get_server_name()}{url_path}?key={self.apikey}'
         else:
-            url_str = '%s%s' % (self.get_server_name(), url_path)
+            url_str = f'{self.get_server_name()}{url_path}'
 
         return self.make_api_call(url_str, self.HTTP_GET)
    
    
     def make_api_delete_call(self, call_name, url_path, use_api_key=False, id_val=None):
-           msgt(call_name)
-           if use_api_key:
-               url_str = '%s%s?key=%s' % (self.get_server_name(), url_path, self.apikey)
-           else:
-               url_str = '%s%s' % (self.get_server_name(), url_path)
+        msgt(call_name)
+        if use_api_key:
+            url_str = f'{self.get_server_name()}{url_path}?key={self.apikey}'
+        else:
+            url_str = f'{self.get_server_name()}{url_path}'
 
-           return self.make_api_call(url_str, self.HTTP_DELETE)#, kwargs)
+        return self.make_api_call(url_str, self.HTTP_DELETE)#, kwargs)
 
 
     def save_to_file(self, fname, content):
         dirname = os.path.dirname(fname)
         if not os.path.isdir(dirname):
-            msgx('This directory does not exist: %s' % dirname)
-        fh = open(fname, 'w')
-        fh.write(content)
-        fh.close()
-        msg('File written: %s' % fname)
+            msgx(f'This directory does not exist: {dirname}')
+        with open(fname, 'w') as fh:
+            fh.write(content)
+        msg(f'File written: {fname}')
         
         
     def save_current_metadata(self, output_dir):
@@ -354,41 +364,52 @@ class DataverseAPILink:
         """
         msgt('run_dataverse_backup')
         if not os.path.isdir(output_dir):
-            msgx('This directory does not exist: %s' % output_dir)
-    
+            msgx(f'This directory does not exist: {output_dir}')
+
         #date_str = datetime.now().strftime('%Y-%m%d_%H%M')
         date_str = datetime.now().strftime('%Y-%m%d_%H')
-        
+
         self.set_return_mode_string()
 
         #---------------------------
         # Retrieve the users
         #---------------------------
         user_json = self.list_users()
-        self.save_to_file(os.path.join(output_dir, 'users_%s.json' % date_str), user_json)
+        self.save_to_file(
+            os.path.join(output_dir, f'users_{date_str}.json'), user_json
+        )
+
 
         #---------------------------
         # Retrieve the roles
         #---------------------------
         #roles_json = self.list_roles()
         #self.save_to_file(os.path.join(output_dir, 'roles_%s.json' % date_str), roles_json)
-    
+
         #---------------------------
         # Retrieve the dataverses
         #---------------------------
         dv_json = self.list_dataverses()
-        self.save_to_file(os.path.join(output_dir, 'dataverses_%s.json' % date_str), dv_json)
+        self.save_to_file(
+            os.path.join(output_dir, f'dataverses_{date_str}.json'), dv_json
+        )
+
 
         #---------------------------
         # Retrieve the datasets
         #---------------------------
         dset_json = self.list_datasets()
-        self.save_to_file(os.path.join(output_dir, 'datasets_%s.json' % date_str), dset_json)        
+        self.save_to_file(
+            os.path.join(output_dir, f'datasets_{date_str}.json'), dset_json
+        )        
 
     
-    def delete_dataverse_by_id(self, id_val):        
-        msgt('delete_dataverse_by_id: %s' % id_val)    
-        url_str = self.get_server_name() + '/api/dataverses/%s?key=%s' % (id_val, self.apikey) 
+    def delete_dataverse_by_id(self, id_val):    
+        msgt(f'delete_dataverse_by_id: {id_val}')
+        url_str = (
+            self.get_server_name() + f'/api/dataverses/{id_val}?key={self.apikey}'
+        )
+
         return self.make_api_call(url_str, self.HTTP_DELETE)
 
     

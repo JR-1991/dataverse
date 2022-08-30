@@ -30,14 +30,14 @@ class test_access(unittest.TestCase):
         msg = "Success"
         wd = self.wd
         wd.get(config.accessURL)
-        if not ("Log In" in wd.find_element_by_tag_name("html").text):
+        if "Log In" not in wd.find_element_by_tag_name("html").text:
             success = False
-            print("Could not verify page text.") 
+            print("Could not verify page text.")
         self.assertTrue(success)
     
     def tearDown(self):
         if not (config.local):
-            print("Link to your job: https://saucelabs.com/jobs/%s" % self.wd.session_id)
+            print(f"Link to your job: https://saucelabs.com/jobs/{self.wd.session_id}")
         self.wd.quit()
 
 if __name__ == '__main__':

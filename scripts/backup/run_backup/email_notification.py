@@ -13,7 +13,7 @@ def send_notification(text):
         raise ValueError('Notification email address is not configured')
 
     nowdate_str = datetime.fromtimestamp(time()).strftime('%Y-%m-%d %H:%M')
-    subject_str = ('Dataverse datafile backup report [%s]' % nowdate_str)
+    subject_str = f'Dataverse datafile backup report [{nowdate_str}]'
 
     p = Popen(['mail','-s',subject_str,notification_address], stdout=PIPE, stdin=PIPE, stderr=PIPE)
     stdout_data = p.communicate(input=text)[0]

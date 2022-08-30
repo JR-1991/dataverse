@@ -8,14 +8,17 @@ SETTINGS_FILE = join(STRESS_TEST_DIR, 'settings.json')
 
 def get_settings_info(key_name):
     SETTINGS_LOOKUP = {}
-    assert isfile(SETTINGS_FILE), 'File not found: %s' % SETTINGS_FILE
+    assert isfile(SETTINGS_FILE), f'File not found: {SETTINGS_FILE}'
 
     if key_name in SETTINGS_LOOKUP:
         return SETTINGS_LOOKUP.get(key_name)
 
     json_settings = json.loads(open(SETTINGS_FILE, 'r').read())
 
-    assert key_name in json_settings, 'Key *%s* not found in settings file' % key_name
+    assert (
+        key_name in json_settings
+    ), f'Key *{key_name}* not found in settings file'
+
 
     cred_value = json_settings.get(key_name)
 

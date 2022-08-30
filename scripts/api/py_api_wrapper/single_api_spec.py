@@ -8,19 +8,16 @@ class SingleAPISpec:
     URL_PLACEHOLDER = '{{ID_VAL}}'
     
     def __init__(self, spec_list):
-        if not type(spec_list) in (list,tuple):
+        if type(spec_list) not in (list, tuple):
             raise Exception('Bad spec.  Expected list or tuple.\nReceived: %s' % type(spec_list))
-            
-        num_params = len(spec_list)    
-        if not num_params in (5,6):
+
+        num_params = len(spec_list)
+        if num_params not in {5, 6}:
             raise Exception('Expected 5 or 6 values.\nReceived: %s' % spec_list)
 
         # Lazy way to add attributes
         for idx, attr in enumerate(self.ATTR_NAMES):
-            if (idx) == num_params:
-                self.__dict__[attr] = None          # only 5 params given, param_dict not needed
-            else:
-                self.__dict__[attr] = spec_list[idx]                
+            self.__dict__[attr] = None if (idx) == num_params else spec_list[idx]                
                 # e.g., 1st iteration is equivalent of "self.new_function_name = spec_list[0]"
             
             

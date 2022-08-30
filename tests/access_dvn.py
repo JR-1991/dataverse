@@ -22,7 +22,7 @@ class AccessDVN(unittest.TestCase):
 
 
     def tearDown(self):
-        print("Link to your job: https://saucelabs.com/jobs/%s" % self.driver.session_id)
+        print(f"Link to your job: https://saucelabs.com/jobs/{self.driver.session_id}")
         self.driver.quit()
 
 if __name__ == '__main__':

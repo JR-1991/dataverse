@@ -28,7 +28,7 @@ class test_root_dataverse(unittest.TestCase):
         success = True
         wd = self.wd
         wd.get(config.accessURL)
-        if not ("Create Root Dataverse" in wd.find_element_by_tag_name("html").text):
+        if "Create Root Dataverse" not in wd.find_element_by_tag_name("html").text:
             print("Root dataverse exists. Exiting.")
             return
         wd.find_element_by_id("dataverseForm:name").click()
@@ -48,14 +48,14 @@ class test_root_dataverse(unittest.TestCase):
         wd.find_element_by_id("dataverseForm:description").send_keys("This is a test")
         wd.find_element_by_id("dataverseForm:save").click()
         time.sleep(1)
-        if not ("root dv" in wd.find_element_by_tag_name("html").text):
+        if "root dv" not in wd.find_element_by_tag_name("html").text:
             success = False
             print("verify root dv name failed")
         self.assertTrue(success)
     
     def tearDown(self):
         if not (config.local):
-            print("Link to your job: https://saucelabs.com/jobs/%s" % self.wd.session_id)        
+            print(f"Link to your job: https://saucelabs.com/jobs/{self.wd.session_id}")
         self.wd.quit()
 
 if __name__ == '__main__':

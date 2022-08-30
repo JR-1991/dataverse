@@ -24,14 +24,9 @@ def create_database_connection(database='database'):
     #Define our connection string                                                                                                                                   
     conn_string = "host='"+Host+"' dbname='"+Database+"' user='"+Username+"' password='"+Password+"'"
 
-    #print "Connecting to database\n->%s" % (conn_string)
-
-    # get a connection, if a connect cannot be made an exception will be raised here
-    conn = psycopg2.connect(conn_string)
-
     #print "Connected!\n"
 
-    return conn
+    return psycopg2.connect(conn_string)
 
 def get_backupdb_connection():
     global backup_db_connection
@@ -57,13 +52,11 @@ def query_database(sinceTimestamp=None):
     if sinceTimestamp is None:
         cursor.execute(dataverse_query)
     else:
-        dataverse_query = dataverse_query+" AND o.createdate > %s"
+        dataverse_query += " AND o.createdate > %s"
         cursor.execute(dataverse_query, (sinceTimestamp,))
 
 
-    records = cursor.fetchall()
-
-    return records
+    return cursor.fetchall()
 
 def get_last_timestamp():
     backup_db_connection = get_backupdb_connection()
@@ -83,32 +76,23 @@ def get_last_timestamp():
 
     #timestamp = record[0] + timedelta(seconds=1)
     timestamp = record[0]
-    # milliseconds are important!
-    timestamp_str = timestamp.strftime('%Y-%m-%d %H:%M:%S.%f')
-
-    return timestamp_str
+    return timestamp.strftime('%Y-%m-%d %H:%M:%S.%f')
 
 def get_datafile_status(dataset_authority, dataset_identifier, storage_identifier):
     backup_db_connection = get_backupdb_connection()
     cursor = backup_db_connection.cursor()
 
     # select the last timestamp from the datafilestatus table: 
-    
+
     dataverse_query="SELECT status FROM datafilestatus WHERE datasetidentifier=%s AND storageidentifier=%s;"
 
-    dataset_id=dataset_authority+"/"+dataset_identifier
+    dataset_id = f"{dataset_authority}/{dataset_identifier}"
 
     cursor.execute(dataverse_query, (dataset_id, storage_identifier))
 
     record = cursor.fetchone()
 
-    if record is None:
-        #print "no backup status for this file"
-        return None
-
-    backupstatus = record[0]
-    #print "last backup status: "+backupstatus
-    return backupstatus
+    return None if record is None else record[0]
 
 def record_datafile_status(dataset_authority, dataset_identifier, storage_identifier, status, createdate):
     current_status = get_datafile_status(dataset_authority, dataset_identifier, storage_identifier)
@@ -124,7 +108,7 @@ def record_datafile_status(dataset_authority, dataset_identifier, storage_identi
     else:
         query = "UPDATE datafilestatus SET status=%s, createdate=%s, lastbackuptime=%s, lastbackupmethod=%s WHERE datasetidentifier=%s AND storageidentifier=%s;"
 
-    dataset_id=dataset_authority+"/"+dataset_identifier
+    dataset_id = f"{dataset_authority}/{dataset_identifier}"
     backup_method = ConfigSectionMap("Backup")['storagetype']
 
     cursor.execute(query, (status, createdate_str, nowdate_str, backup_method, dataset_id, storage_identifier))

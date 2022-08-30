@@ -7,14 +7,14 @@ from storage_s3 import (open_storage_object_s3)
 
 
 def open_dataverse_file(dataset_authority, dataset_identifier, storage_identifier, is_tabular_data):
-    m = re.search('^([a-z0-9]*)://(.*)$', storage_identifier) 
+    m = re.search('^([a-z0-9]*)://(.*)$', storage_identifier)
     if m is None:
         # no storage identifier tag. (defaulting to filesystem storage)
         storageTag = 'file'
         objectLocation = storage_identifier;
     else:
-        storageTag = m.group(1)
-        objectLocation = m.group(2)
+        storageTag = m[1]
+        objectLocation = m[2]
 
     if storageTag == 'file':
         byteStream = open_storage_object_filesystem(dataset_authority, dataset_identifier, objectLocation, is_tabular_data)
@@ -25,4 +25,6 @@ def open_dataverse_file(dataset_authority, dataset_identifier, storage_identifie
     elif storageTag == 'swift':
         raise ValueError("backup of swift objects not supported yet")
 
-    raise ValueError("Unknown or unsupported storage method: "+storage_identifier)
+    raise ValueError(
+        f"Unknown or unsupported storage method: {storage_identifier}"
+    )

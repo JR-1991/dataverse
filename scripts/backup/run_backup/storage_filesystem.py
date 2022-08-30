@@ -6,6 +6,6 @@ def open_storage_object_filesystem(dataset_authority, dataset_identifier, object
     filesystem_directory = ConfigSectionMap("Repository")['filesystemdirectory']
     if (is_tabular_data is not None):
         object_location += ".orig"
-    file_path = filesystem_directory+"/"+dataset_authority+"/"+dataset_identifier+"/"+object_location
-    byte_stream = io.open(file_path, "rb")
-    return byte_stream
+    file_path = f"{filesystem_directory}/{dataset_authority}/{dataset_identifier}/{object_location}"
+
+    return io.open(file_path, "rb")

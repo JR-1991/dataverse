@@ -11,7 +11,10 @@ json1 = urllib2.urlopen(request).read()
 data1 = json.loads(json1)
 #print json.dumps(data1, indent=2)
 war_file = data1['extraProperties']['childResources'].keys()[0]
-request = urllib2.Request(base_url + '/' + war_file, headers = { 'Accept' : 'application/json'})
+request = urllib2.Request(
+    f'{base_url}/{war_file}', headers={'Accept': 'application/json'}
+)
+
 json2 = urllib2.urlopen(request).read()
 data2 = json.loads(json2)
 #print json.dumps(data2, indent=2)
@@ -22,7 +25,7 @@ def highwater(data, metric):
     time_readable = epoch2readable (obj, columns[0])
     current = obj[columns[1]]
     highwater = obj[columns[2]]
-    filename = metric + '.tsv'
+    filename = f'{metric}.tsv'
     values = [[time_readable, current, highwater]];
     write_file(metric, columns, values)
 
@@ -36,11 +39,12 @@ def count(data, metric):
 
 def epoch2readable(obj, key):
     time_epochsec = obj[key] / 1000.0
-    time_readable = datetime.datetime.fromtimestamp(time_epochsec).strftime('%Y-%m-%d %H:%M:%S.%f')
-    return time_readable
+    return datetime.datetime.fromtimestamp(time_epochsec).strftime(
+        '%Y-%m-%d %H:%M:%S.%f'
+    )
 
 def write_file(metric, columns, values):
-    filename = metric + '.tsv'
+    filename = f'{metric}.tsv'
     if not os.path.isfile(filename):
         write_header(columns, filename)
     write_values(values, filename)
@@ -57,14 +61,13 @@ def write_values(values, filename):
         a.writerows(values);
 
 def uniq(filename):
-    tmpfile = filename + '.tmp'
+    tmpfile = f'{filename}.tmp'
     lines_seen = set() # holds lines already seen
-    outfile = open(tmpfile, 'w')
-    for line in open(filename, 'r'):
-        if line not in lines_seen: # not a duplicate
-            outfile.write(line)
-            lines_seen.add(line)
-    outfile.close()
+    with open(tmpfile, 'w') as outfile:
+        for line in open(filename, 'r'):
+            if line not in lines_seen: # not a duplicate
+                outfile.write(line)
+                lines_seen.add(line)
     move(tmpfile, filename)
 
 highwater(data1, 'numconnused')

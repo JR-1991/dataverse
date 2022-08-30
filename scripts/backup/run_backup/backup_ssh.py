@@ -34,7 +34,7 @@ def open_ssh_client():
 def transfer_file(local_flo, dataset_authority, dataset_identifier, storage_identifier, byte_size):
     sftp_client=my_ssh_client.open_sftp()
 
-    remote_dir = dataset_authority + "/" + dataset_identifier
+    remote_dir = f"{dataset_authority}/{dataset_identifier}"
 
     subdirs = remote_dir.split("/")
 
@@ -51,7 +51,7 @@ def transfer_file(local_flo, dataset_authority, dataset_identifier, storage_iden
 
     m = re.search('^([a-z0-9]*)://(.*)$', storage_identifier)
     if m is not None:
-        storageTag = m.group(1)
+        storageTag = m[1]
         storage_identifier = re.sub('^.*:', '', storage_identifier)
 
     remote_file = cdir + storage_identifier
@@ -73,33 +73,36 @@ def transfer_file(local_flo, dataset_authority, dataset_identifier, storage_iden
 
     sftp_client.close()
 
-    print "File transfered."
+    sftp_client=my_ssh_client.open_sftp()
 
     return remote_file
 
 def verify_remote_file(remote_file, checksum_type, checksum_value):
     try: 
-        stdin,stdout,stderr=my_ssh_client.exec_command("ls "+remote_file)
+        stdin,stdout,stderr = my_ssh_client.exec_command(f"ls {remote_file}")
         remote_file_checked = stdout.readlines()[0].rstrip("\n\r")
     except:
-        raise ValueError("remote file check failed (" + remote_file + ")")
+        raise ValueError(f"remote file check failed ({remote_file})")
 
     if (remote_file != remote_file_checked):
-        raise ValueError("remote file NOT FOUND! (" + remote_file_checked + ")")
+        raise ValueError(f"remote file NOT FOUND! ({remote_file_checked})")
 
     if (checksum_type == "MD5"):
         remote_command = "md5sum"
     elif (checksum_type == "SHA1"):
         remote_command = "sha1sum"
-        
+
     try: 
-        stdin,stdout,stderr=my_ssh_client.exec_command(remote_command+" "+remote_file)
+        stdin, stdout, stderr = my_ssh_client.exec_command(
+            f"{remote_command} {remote_file}"
+        )
+
         remote_checksum_value = (stdout.readlines()[0]).split(" ")[0]
     except: 
-        raise ValueError("remote checksum check failed (" + remote_file + ")")
+        raise ValueError(f"remote checksum check failed ({remote_file})")
 
     if (checksum_value != remote_checksum_value):
-        raise ValueError("remote checksum BAD! (" + remote_checksum_value + ")")
+        raise ValueError(f"remote checksum BAD! ({remote_checksum_value})")
 
 
 def backup_file_ssh(file_input, dataset_authority, dataset_identifier, storage_identifier, checksum_type, checksum_value, byte_size=0):

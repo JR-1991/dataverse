@@ -67,10 +67,13 @@ class test_dataset_fileupload(unittest.TestCase):
             print("Could not find file name in upload table.")
         wd.find_element_by_id("datasetForm:save").click()
         time.sleep(3)
-        if not ("Test Drag and Drop" in wd.find_element_by_tag_name("html").text):
+        if "Test Drag and Drop" not in wd.find_element_by_tag_name("html").text:
             success = False
             print("Could not find dataset title on page.")
-        if not ("tester, \"Test Drag and Drop\", 2013, test, http://dx.doi.org/10.1234/dataverse/" in wd.find_element_by_tag_name("html").text):
+        if (
+            "tester, \"Test Drag and Drop\", 2013, test, http://dx.doi.org/10.1234/dataverse/"
+            not in wd.find_element_by_tag_name("html").text
+        ):
             success = False
             print("Could not verify data citation.")
         wd.find_element_by_link_text("Log Out").click()
@@ -78,7 +81,7 @@ class test_dataset_fileupload(unittest.TestCase):
     
     def tearDown(self):
         if not (config.local):
-            print("Link to your job: https://saucelabs.com/jobs/%s" % self.wd.session_id)        
+            print(f"Link to your job: https://saucelabs.com/jobs/{self.wd.session_id}")
         self.wd.quit()
 
 if __name__ == '__main__':
