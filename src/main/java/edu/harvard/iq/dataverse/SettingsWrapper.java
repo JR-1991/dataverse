@@ -98,6 +98,7 @@ public class SettingsWrapper implements java.io.Serializable {
     //External Vocabulary support
     private Map<Long, JsonObject> cachedCvocMap = null;
     private Map<Long, JsonObject> cachedCvocByTermFieldMap = null;
+    private Set<Long> cvocFieldSet;
     
     private Long zipDownloadLimit = null; 
     
@@ -731,11 +732,11 @@ public class SettingsWrapper implements java.io.Serializable {
             if (target.getOwner() == null) {
                 boolean defaultOption = gbDefault.get();
                 useDefault = (defaultOption ? atRequest : atDownload)
-                        + BundleUtil.getStringFromBundle("dataverse.default");
+                        + " " + BundleUtil.getStringFromBundle("dataverse.default");
             } else {
                 boolean defaultOption = target.getOwner().getEffectiveGuestbookEntryAtRequest();
                 useDefault = (defaultOption ? atRequest : atDownload)
-                        + BundleUtil.getStringFromBundle("dataverse.inherited");
+                        + " " + BundleUtil.getStringFromBundle("dataverse.inherited");
             }
             currentMap.put(DvObjectContainer.UNDEFINED_CODE, useDefault);
             currentMap.put(Boolean.toString(true), atRequest);
@@ -804,6 +805,17 @@ public class SettingsWrapper implements java.io.Serializable {
             }
             return cachedCvocMap;
         }
+    }
+    
+    public boolean isCvocField(Long fieldId) {
+
+        if(cvocFieldSet == null) {
+            cvocFieldSet = fieldService.getCvocFieldSet();
+        }
+        if(cvocFieldSet == null) {
+         return false;
+        }
+        return cvocFieldSet.contains(fieldId);
     }
     
     public String getMetricsUrl() {

@@ -2,6 +2,7 @@ package edu.harvard.iq.dataverse.export.openaire;
 
 import java.io.OutputStream;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jakarta.json.JsonObject;
@@ -49,19 +50,31 @@ public class OpenAireExportUtil {
     }
 
     private static void dto2openaire(DatasetDTO datasetDto, OutputStream outputStream) throws XMLStreamException {
-        XMLStreamWriter xmlw = XMLOutputFactory.newInstance().createXMLStreamWriter(outputStream);
+        XMLStreamWriter xmlw = null;
+        try {
+            xmlw = XMLOutputFactory.newInstance().createXMLStreamWriter(outputStream);
 
-        xmlw.writeStartElement("resource"); // <resource>
+            xmlw.writeStartElement("resource"); // <resource>
 
-        xmlw.writeAttribute("xmlns:xsi", XSI_NAMESPACE);
-        xmlw.writeAttribute("xmlns", RESOURCE_NAMESPACE);
-        xmlw.writeAttribute("xsi:schemaLocation", RESOURCE_NAMESPACE + " " + RESOURCE_SCHEMA_LOCATION);
+            xmlw.writeAttribute("xmlns:xsi", XSI_NAMESPACE);
+            xmlw.writeAttribute("xmlns", RESOURCE_NAMESPACE);
+            xmlw.writeAttribute("xsi:schemaLocation", RESOURCE_NAMESPACE + " " + RESOURCE_SCHEMA_LOCATION);
 
-        createOpenAire(xmlw, datasetDto);
+            createOpenAire(xmlw, datasetDto);
 
-        xmlw.writeEndElement(); // </resource>
+            xmlw.writeEndElement(); // </resource>
 
-        xmlw.flush();
+            xmlw.flush();
+        } finally {
+            if (xmlw != null) {
+                try {
+                    xmlw.close();
+                } catch (XMLStreamException e) {
+                    // Log this exception, but don't rethrow as it's in finally block
+                    logger.log(Level.WARNING, "Error closing XMLStreamWriter", e);
+                }
+            }
+        }
     }
 
     private static void createOpenAire(XMLStreamWriter xmlw, DatasetDTO datasetDto) throws XMLStreamException {
@@ -932,6 +945,7 @@ public class OpenAireExportUtil {
                             String relatedIdentifierType = null;
                             String relatedIdentifier = null; // is used when relatedIdentifierType variable is not URL
                             String relatedURL = null; // is used when relatedIdentifierType variable is URL
+                            String relationType = null; // is used when relatedIdentifierType variable is URL
 
                             for (Iterator<FieldDTO> iterator = fieldDTOs.iterator(); iterator.hasNext();) {
                                 FieldDTO next = iterator.next();
@@ -943,6 +957,9 @@ public class OpenAireExportUtil {
                                 }
                                 if (DatasetFieldConstant.publicationURL.equals(next.getTypeName())) {
                                     relatedURL = next.getSinglePrimitive();
+                                }
+                                if (DatasetFieldConstant.publicationRelationType.equals(next.getTypeName())) {
+                                    relationType = next.getSinglePrimitive();
                                 }
                             }
 
@@ -956,7 +973,10 @@ public class OpenAireExportUtil {
                                 }
 
                                 relatedIdentifier_map.put("relatedIdentifierType", relatedIdentifierType);
-                                relatedIdentifier_map.put("relationType", "IsCitedBy");
+                                if(relationType== null) {
+                                    relationType = "IsCitedBy";
+                                }
+                                relatedIdentifier_map.put("relationType", relationType);
 
                                 if (StringUtils.containsIgnoreCase(relatedIdentifierType, "url")) {
                                     writeFullElement(xmlw, null, "relatedIdentifier", relatedIdentifier_map, relatedURL, language);
@@ -1264,12 +1284,16 @@ public class OpenAireExportUtil {
      */
     public static void writeGeoLocationsElement(XMLStreamWriter xmlw, DatasetVersionDTO datasetVersionDTO, String language) throws XMLStreamException {
         // geoLocation -> geoLocationPlace
-        String geoLocationPlace = dto2Primitive(datasetVersionDTO, DatasetFieldConstant.productionPlace);
+        List<String> geoLocationPlaces = dto2MultiplePrimitive(datasetVersionDTO, DatasetFieldConstant.productionPlace);
         boolean geoLocations_check = false;
 
         // write geoLocations
         geoLocations_check = writeOpenTag(xmlw, "geoLocations", geoLocations_check);
-        writeGeolocationPlace(xmlw, geoLocationPlace, language);
+        if (geoLocationPlaces != null) {
+            for (String geoLocationPlace : geoLocationPlaces) {
+                writeGeolocationPlace(xmlw, geoLocationPlace, language);
+            }
+        }
                 
         // get DatasetFieldConstant.geographicBoundingBox
         for (Map.Entry<String, MetadataBlockDTO> entry : datasetVersionDTO.getMetadataBlocks().entrySet()) {
@@ -1436,6 +1460,8 @@ public class OpenAireExportUtil {
         writeEndTag(xmlw, fundingReference_check);
     }
 
+    
+    //Duplicates XmlWriterUtil.dto2Primitive
     private static String dto2Primitive(DatasetVersionDTO datasetVersionDTO, String datasetFieldTypeName) {
         // give the single value of the given metadata
         for (Map.Entry<String, MetadataBlockDTO> entry : datasetVersionDTO.getMetadataBlocks().entrySet()) {
@@ -1443,6 +1469,26 @@ public class OpenAireExportUtil {
             for (FieldDTO fieldDTO : value.getFields()) {
                 if (datasetFieldTypeName.equals(fieldDTO.getTypeName())) {
                     return fieldDTO.getSinglePrimitive();
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     * @param datasetVersionDTO
+     * @param datasetFieldTypeName
+     * @return List<String> Multiple Primitive
+     * 
+     */
+    private static List<String> dto2MultiplePrimitive(DatasetVersionDTO datasetVersionDTO, String datasetFieldTypeName) {
+        // give the single value of the given metadata
+        for (Map.Entry<String, MetadataBlockDTO> entry : datasetVersionDTO.getMetadataBlocks().entrySet()) {
+            MetadataBlockDTO value = entry.getValue();
+            for (FieldDTO fieldDTO : value.getFields()) {
+                if (datasetFieldTypeName.equals(fieldDTO.getTypeName())) {
+                    return fieldDTO.getMultiplePrimitive();
                 }
             }
         }

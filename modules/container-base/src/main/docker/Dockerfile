@@ -106,7 +106,7 @@ EOF
 ARG JATTACH_VERSION="v2.2"
 ARG JATTACH_TGZ_CHECKSUM_AMD64="acd9e17f15749306be843df392063893e97bfecc5260eef73ee98f06e5cfe02f"
 ARG JATTACH_TGZ_CHECKSUM_ARM64="288ae5ed87ee7fe0e608c06db5a23a096a6217c9878ede53c4e33710bdcaab51"
-ARG WAIT4X_VERSION="v2.14.0"
+ARG WAIT4X_VERSION="v2.14.2"
 ARG PKGS="jq imagemagick curl unzip wget acl lsof procps netcat-openbsd dumb-init"
 
 # Installing the packages in an extra container layer for better caching
@@ -199,6 +199,13 @@ RUN <<EOF
     ${ASADMIN} set server-config.network-config.protocols.protocol.http-listener-2.http.file-cache.enabled="true"
     ${ASADMIN} set default-config.network-config.protocols.protocol.http-listener-1.http.file-cache.enabled="true"
     ${ASADMIN} set default-config.network-config.protocols.protocol.http-listener-2.http.file-cache.enabled="true"
+    # Set SameSite cookie value: https://docs.payara.fish/community/docs/6.2024.6/Technical%20Documentation/Payara%20Server%20Documentation/General%20Administration/Administering%20HTTP%20Connectivity.html
+    # The following dynamic version is what we want, modeled off "${MPCONFIG=dataverse.http.timeout:900}"
+    # but it's not working so it's commented out. Instead, we hard code the value to "Lax". This means you have
+    # to build your own base image if you'd like to change it.
+    #${ASADMIN} set server-config.network-config.protocols.protocol.http-listener-1.http.cookie-same-site-value=${MPCONFIG=dataverse.cookie-same-site-value:Lax}'
+    ${ASADMIN} set server-config.network-config.protocols.protocol.http-listener-1.http.cookie-same-site-value="Lax"
+    ${ASADMIN} set server-config.network-config.protocols.protocol.http-listener-1.http.cookie-same-site-enabled="true"
     # Disable the HTTPS listener (we are always fronting our appservers with a reverse proxy handling SSL)
     ${ASADMIN} set configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled="false"
     # Enlarge and tune EJB pools (cannot do this for server-config as set does not create new entries)
@@ -222,7 +229,7 @@ RUN <<EOF
     ${ASADMIN} create-network-listener --protocol=http-listener-1 --listenerport=8009 --jkenabled=true jk-connector
     ${ASADMIN} set server-config.network-config.protocols.protocol.http-listener-1.http.comet-support-enabled=true
     ${ASADMIN} create-system-properties javax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl
-    # Always disable phoning home...
+    # Always disable phoning home
     ${ASADMIN} disable-phone-home
 
     ### CLEANUP
@@ -241,7 +248,7 @@ RUN <<EOF
 EOF
 
 USER root
-# Prepare domaindir to be writeable when running on OpenShift (arbitrary UIDs)
+# Prepare domain directory to be writeable when running on OpenShift (arbitrary UIDs)
 # https://docs.openshift.com/container-platform/4.14/openshift_images/create-images.html#use-uid_create-images
 RUN true && \
     chgrp -R 0 "${DOMAIN_DIR}" && \
