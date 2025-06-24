@@ -68,11 +68,13 @@ public enum JvmSettings {
     SOLR_PROT(SCOPE_SOLR, "protocol"),
     SOLR_CORE(SCOPE_SOLR, "core"),
     SOLR_PATH(SCOPE_SOLR, "path"),
+    MIN_FILES_TO_USE_PROXY(SCOPE_SOLR, "min-files-to-use-proxy"),
+
 
     // INDEX CONCURENCY
     SCOPE_SOLR_CONCURENCY(SCOPE_SOLR, "concurrency"),
     MAX_ASYNC_INDEXES(SCOPE_SOLR_CONCURENCY, "max-async-indexes"),
-
+    
     // RSERVE CONNECTION
     SCOPE_RSERVE(PREFIX, "rserve"),
     RSERVE_HOST(SCOPE_RSERVE, "host"),
@@ -85,6 +87,11 @@ public enum JvmSettings {
     SCOPE_API(PREFIX, "api"),
     API_SIGNING_SECRET(SCOPE_API, "signing-secret"),
     API_ALLOW_INCOMPLETE_METADATA(SCOPE_API, "allow-incomplete-metadata"),
+    // API: BLOCKED_API SETTINGS
+    SCOPE_API_BLOCKED(SCOPE_API, "blocked"),
+    API_BLOCKED_ENDPOINTS(SCOPE_API_BLOCKED, "endpoints"),
+    API_BLOCKED_POLICY(SCOPE_API_BLOCKED, "policy"),
+    API_BLOCKED_KEY(SCOPE_API_BLOCKED, "key"),
 
     // SIGNPOSTING SETTINGS
     SCOPE_SIGNPOSTING(PREFIX, "signposting"),
@@ -264,6 +271,14 @@ public enum JvmSettings {
     //CSL CITATION SETTINGS
     SCOPE_CSL(PREFIX, "csl"),
     CSL_COMMON_STYLES(SCOPE_CSL, "common-styles"),
+    
+    // CORS SETTINGS
+    SCOPE_CORS(PREFIX, "cors"),
+    CORS_ORIGIN(SCOPE_CORS, "origin"),
+    CORS_METHODS(SCOPE_CORS, "methods"),
+    SCOPE_CORS_HEADERS(SCOPE_CORS, "headers"),
+    CORS_ALLOW_HEADERS(SCOPE_CORS_HEADERS, "allow"),
+    CORS_EXPOSE_HEADERS(SCOPE_CORS_HEADERS, "expose"),
     ;
 
     private static final String SCOPE_SEPARATOR = ".";
