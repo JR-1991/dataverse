@@ -1,0 +1,124 @@
+name: 🐛 Bug Report
+description: Did you encounter something unexpected or incorrect in the Dataverse software? We'd like to hear about it!
+labels: ["Type: Bug"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for contributing to the Dataverse Project through the creation of a bug report! 🙏
+
+        **⚠️ WARNING:** If this is a security issue it should be reported privately to security@dataverse.org
+
+        More information on bug issues and contributions can be found in the [Contributing to Dataverse](https://guides.dataverse.org/en/latest/contributor/index.html) guide.
+
+  - type: textarea
+    id: reproduction_steps
+    attributes:
+      label: Steps to Reproduce
+      description: |
+        Please provide detailed steps to reproduce the issue. Be as specific as possible.
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: when_occurs
+    attributes:
+      label: When does this issue occur?
+      description: Describe the circumstances under which this issue happens
+      placeholder: e.g., "Every time I try to upload a file larger than 1GB" or "Only when using Safari browser"
+    validations:
+      required: true
+
+  - type: textarea
+    id: pages_affected
+    attributes:
+      label: Which page(s) does it occur on?
+      description: List the specific pages or sections where you encounter this issue
+      placeholder: e.g., "Dataset upload page", "Search results page", "User profile settings"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what_happens
+    attributes:
+      label: What happens?
+      description: Describe the actual behavior you observe
+      placeholder: Describe exactly what you see happening...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user_type
+    attributes:
+      label: To whom does it occur?
+      description: Select which type of users experience this issue
+      options:
+        - All users
+        - Regular users only
+        - Curators only
+        - Superusers only
+        - Specific user role (please specify in additional context)
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: What did you expect to happen?
+      description: Describe what you expected to happen instead
+      placeholder: Describe the expected behavior...
+    validations:
+      required: true
+
+  - type: textarea
+    id: dataverse_version
+    attributes:
+      label: Dataverse Version
+      description: |
+        Which version of Dataverse are you using? You can usually find this in the footer of the Dataverse interface or by asking your administrator.
+      placeholder: e.g., "5.14", "6.0", "6.1", etc.
+    validations:
+      required: true
+
+  - type: textarea
+    id: related_issues
+    attributes:
+      label: Related Issues
+      description: Are there any related open or closed issues to this bug report?
+      placeholder: e.g., "Related to #1234" or "Similar to #5678"
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: |
+        Screenshots are always welcome and help us understand the issue better.
+
+        You can drag and drop images here or use the attachment button.
+        See [GitHub's guide on file attachments](https://help.github.com/en/articles/file-attachments-on-issues-and-pull-requests) for more information.
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: |
+        Add any other context about the problem here. This could include:
+        - Browser information (name, version)
+        - Operating system
+        - Error messages or logs
+        - Network environment details
+        - Any recent changes that might be relevant
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Are you thinking about creating a pull request for this issue?
+      options:
+        - label: I am willing to help fix this issue by creating a pull request
+          required: false

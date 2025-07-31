@@ -1,0 +1,93 @@
+name: 💡 Idea Proposal
+description: Propose a new idea for discussion to improve the Dataverse software!
+labels: ["Type: Suggestion"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for contributing to the Dataverse Project through the creation of an idea proposal! 🙏
+
+        More information on ideas/feature requests and contributions can be found in the [Contributing to Dataverse](https://guides.dataverse.org/en/latest/contributor/index.html) guide.
+
+  - type: textarea
+    id: overview
+    attributes:
+      label: Overview of the Suggestion
+      description: Provide a clear and concise description of your idea or suggestion
+      placeholder: Describe your suggestion or idea...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user_type
+    attributes:
+      label: What kind of user is the suggestion intended for?
+      description: Select the primary user type(s) that would benefit from this suggestion
+      multiple: true
+      options:
+        - API User
+        - Curator
+        - Depositor
+        - Guest
+        - Superuser
+        - Sysadmin
+        - All users
+        - Other (please specify in additional context)
+    validations:
+      required: true
+
+  - type: textarea
+    id: inspiration
+    attributes:
+      label: What inspired this idea?
+      description: Tell us about the use case, problem, or scenario that led to this suggestion
+      placeholder: Describe what motivated this idea...
+    validations:
+      required: true
+
+  - type: textarea
+    id: existing_behavior
+    attributes:
+      label: What existing behavior do you want changed?
+      description: If this suggestion involves modifying current functionality, describe what should be changed
+      placeholder: Describe current behavior that should be modified (if applicable)...
+
+  - type: textarea
+    id: new_behavior
+    attributes:
+      label: Any brand new behavior do you want to add to Dataverse?
+      description: If this suggestion adds completely new functionality, describe what should be added
+      placeholder: Describe new functionality to be added (if applicable)...
+
+  - type: textarea
+    id: related_issues
+    attributes:
+      label: Related Issues
+      description: Are there any open or closed issues related to this suggestion?
+      placeholder: e.g., "Related to #1234" or "Similar to discussion in #5678"
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: |
+        Add any other context about the suggestion here. This could include:
+        - Examples from other similar systems
+        - Research or articles that support the idea
+        - Potential challenges or considerations
+        - Alternative approaches you've considered
+        - Community feedback or discussions about this idea
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Are you thinking about creating a pull request for this idea?
+      options:
+        - label: I am willing to help implement this idea by creating a pull request
+          required: false
+        - label: My organization plans to implement this idea
+          required: false
+        - label: This is primarily for discussion and community feedback
+          required: false

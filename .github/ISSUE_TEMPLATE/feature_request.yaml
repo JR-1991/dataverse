@@ -1,0 +1,91 @@
+name: ✨ Feature Request
+description: Suggest an idea or new feature for the Dataverse software!
+labels: ["Type: Feature"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for contributing to the Dataverse Project through the creation of a feature request! 🙏
+
+        More information on ideas/feature requests and contributions can be found in the [Contributing to Dataverse](https://guides.dataverse.org/en/latest/contributor/index.html) guide.
+
+  - type: textarea
+    id: overview
+    attributes:
+      label: Overview of the Feature Request
+      description: Provide a clear and concise description of the feature you'd like to see implemented
+      placeholder: Describe the feature you're requesting...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user_type
+    attributes:
+      label: What kind of user is the feature intended for?
+      description: Select the primary user type(s) that would benefit from this feature
+      multiple: true
+      options:
+        - API User
+        - Curator
+        - Depositor
+        - Guest
+        - Superuser
+        - Sysadmin
+        - All users
+        - Other (please specify in additional context)
+    validations:
+      required: true
+
+  - type: textarea
+    id: inspiration
+    attributes:
+      label: What inspired the request?
+      description: Tell us about the use case, problem, or scenario that led to this feature request
+      placeholder: Describe what motivated this feature request...
+    validations:
+      required: true
+
+  - type: textarea
+    id: existing_behavior
+    attributes:
+      label: What existing behavior do you want changed?
+      description: If this feature involves modifying current functionality, describe what should be changed
+      placeholder: Describe current behavior that should be modified (if applicable)...
+
+  - type: textarea
+    id: new_behavior
+    attributes:
+      label: Any brand new behavior do you want to add to Dataverse?
+      description: If this feature adds completely new functionality, describe what should be added
+      placeholder: Describe new functionality to be added (if applicable)...
+
+  - type: textarea
+    id: related_issues
+    attributes:
+      label: Related Issues
+      description: Are there any open or closed issues related to this feature request?
+      placeholder: e.g., "Related to #1234" or "Builds on #5678"
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: |
+        Add any other context about the feature request here. This could include:
+        - Screenshots or mockups of the desired functionality
+        - Examples from other similar systems
+        - Technical considerations or constraints
+        - Priority or timeline considerations
+        - Links to relevant documentation or discussions
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Are you thinking about creating a pull request for this feature?
+      options:
+        - label: I am willing to help implement this feature by creating a pull request
+          required: false
+        - label: My organization plans to implement this feature
+          required: false
